@@ -1,4 +1,5 @@
 import os
+import socket
 from dotenv import load_dotenv
 import subprocess
 import re
@@ -19,6 +20,7 @@ def get_smartctl_data():
 
 
     # Extract relevant values from the output using regular expressions
+    hostname = socket.gethostname()
     timestamp = datetime.datetime.now().isoformat()
     temperature = re.search(r'Temperature:\s+(\d+)\sCelsius', command_output).group(1)
     available_spare = re.search(r'Available Spare:\s+(\d+)%', command_output).group(1)
@@ -33,6 +35,7 @@ def get_smartctl_data():
     media_and_data_integrity_errors = re.search(r'Media and Data Integrity Errors:\s+(\d+)', command_output).group(1)
 
     return {
+        "host": hostname,
         "temperature": int(temperature),
         "available_spare": int(available_spare),
         "percentage_used": int(percentage_used),
@@ -63,6 +66,7 @@ def write_smartctl_data():
     disk_data = get_smartctl_data()
 
     point = influxdb_client.Point("disk") \
+        .tag("host", disk_data['host']) \
         .field("temperature", disk_data['temperature']) \
         .field("available_spare", disk_data['available_spare']) \
         .field("percentage_used", disk_data['percentage_used']) \
