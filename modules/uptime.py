@@ -52,6 +52,9 @@ def collect_and_send_metrics(interval_seconds):
 
 		write_api.write(bucket=influx_bucket, org=influx_org, record=point)
 		time.sleep(interval_seconds)
+		current_datetime = datetime.now()
+		_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+		print(f"{_datetime} - writing uptime module record")
 
 
 def test(interval_seconds):

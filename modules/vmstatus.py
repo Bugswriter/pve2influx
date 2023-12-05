@@ -27,6 +27,9 @@ def write_in_influx(data):
 
 
 	write_api.write(bucket=influx_bucket, record=p)
+	current_datetime = datetime.now()
+	_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+	print(f"{_datetime} - writing vmstatus module record")
 
 
 def parse_data(log):

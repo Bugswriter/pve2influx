@@ -2,6 +2,7 @@ import time
 import os
 import socket
 from dotenv import load_dotenv
+from datetime import datetime
 import subprocess
 import re
 import influxdb_client
@@ -82,6 +83,9 @@ def collect_and_send_metrics(interval_seconds):
 					.field("media_and_data_integrity_errors", disk_data['media_and_data_integrity_errors'])
 
 		write_api.write(bucket=influx_bucket, org=influx_org, record=point)
+		current_datetime = datetime.now()
+		_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+		print(f"{_datetime} - writing disk module record")
 
 
 def test(interval_seconds):
