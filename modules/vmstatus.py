@@ -4,9 +4,6 @@ from threading import Thread
 import inotify.adapters
 import time
 
-from modules.disk import collect_data
-
-
 def parse_data(log):
 	log_parts = log.split(':')
 
