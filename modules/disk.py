@@ -1,9 +1,9 @@
+import time
 import os
 import socket
 from dotenv import load_dotenv
 import subprocess
 import re
-import datetime
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
 
@@ -21,7 +21,6 @@ def get_smartctl_data():
 
     # Extract relevant values from the output using regular expressions
     hostname = socket.gethostname()
-    timestamp = datetime.datetime.now().isoformat()
     temperature = re.search(r'Temperature:\s+(\d+)\sCelsius', command_output).group(1)
     available_spare = re.search(r'Available Spare:\s+(\d+)%', command_output).group(1)
     percentage_used = re.search(r'Percentage Used:\s+(\d+)%', command_output).group(1)
@@ -50,7 +49,7 @@ def get_smartctl_data():
     }
 
 
-def write_smartctl_data():
+def collect_and_send_metrics():
     influx_url = os.getenv("INFLUX_URL")
     influx_token = os.getenv("INFLUX_TOKEN")
     influx_org = os.getenv("INFLUX_ORG")
@@ -83,5 +82,11 @@ def write_smartctl_data():
     print("OK")
 
 
+def test(interval_seconds):
+	while True:
+		time.sleep(interval_seconds)
+		print(f"{time.time()} - Disk module")
 
-write_smartctl_data()
+	
+if __name__=="__main__":
+	collect_and_send_metrics()
