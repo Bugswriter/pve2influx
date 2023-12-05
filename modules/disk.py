@@ -1,14 +1,7 @@
-import time
 import os
 import socket
-from dotenv import load_dotenv
-from datetime import datetime
 import subprocess
 import re
-import influxdb_client
-from influxdb_client.client.write_api import SYNCHRONOUS
-
-load_dotenv()
 
 def get_smartctl_data():
 	disk = os.getenv("DISK_PATH")
@@ -50,49 +43,8 @@ def get_smartctl_data():
 	}
 
 
-def collect_and_send_metrics(interval_seconds):
-	influx_url = os.getenv("INFLUX_URL")
-	influx_token = os.getenv("INFLUX_TOKEN")
-	influx_org = os.getenv("INFLUX_ORG")
-	influx_bucket = os.getenv("INFLUX_BUCKET")
+def collect_data():
+	return get_smartctl_data()
 
-	client = influxdb_client.InfluxDBClient(
-			 url=influx_url,
-			 token=influx_token,
-			 org=influx_org
-	)
-
-	write_api = client.write_api(write_options=SYNCHRONOUS)
-
-	while True:
-		time.sleep(interval_seconds)
-		disk_data = get_smartctl_data()
-
-		point = influxdb_client.Point("disk") \
-					.tag("host", disk_data['host']) \
-					.field("temperature", disk_data['temperature']) \
-					.field("available_spare", disk_data['available_spare']) \
-					.field("percentage_used", disk_data['percentage_used']) \
-					.field("data_units_read", disk_data['data_units_read']) \
-					.field("data_units_written", disk_data['data_units_written']) \
-					.field("host_read_commands", disk_data['host_read_commands']) \
-					.field("host_write_commands", disk_data['host_write_commands']) \
-					.field("power_cycles", disk_data['power_cycles']) \
-					.field("power_on_hours", disk_data['power_on_hours']) \
-					.field("unsafe_shutdowns", disk_data['unsafe_shutdowns']) \
-					.field("media_and_data_integrity_errors", disk_data['media_and_data_integrity_errors'])
-
-		write_api.write(bucket=influx_bucket, org=influx_org, record=point)
-		current_datetime = datetime.now()
-		_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
-		print(f"{_datetime} - writing disk module record")
-
-
-def test(interval_seconds):
-	while True:
-		time.sleep(interval_seconds)
-		print(f"{time.time()} - Disk module")
-
-	
 if __name__=="__main__":
-	collect_and_send_metrics(10)
+	print(collect_data())

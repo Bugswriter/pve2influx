@@ -1,7 +1,36 @@
+import os
 import time
 import multiprocessing
 import importlib
 import json
+
+from dotenv import load_dotenv
+import influxdb_client
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+load_dotenv()
+
+
+def create_influxdb_point(measurement, data):
+    point = influxdb_client.Point(measurement)
+    for key, value in data.items():
+        if key == 'host':
+            point = point.tag(key, value)
+        else:
+            point = point.field(key, value)
+
+    return point
+
+def get_influx_write_api():
+	influx_url = os.getenv("INFLUX_URL")
+	influx_token = os.getenv("INFLUX_TOKEN")
+	influx_org = os.getenv("INFLUX_ORG")
+	influx_bucket = os.getenv("INFLUX_BUCKET")
+	
+	client = influxdb_client.InfluxDBClient(url=influx_url, token=influx_token, org=influx_org)
+	write_api = client.write_api(write_options=SYNCHRONOUS)
+	return write_api
+
 
 def run_module(module_name, interval_seconds=None):
 	try:
