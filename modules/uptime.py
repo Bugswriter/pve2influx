@@ -11,28 +11,24 @@ from datetime import datetime
 load_dotenv()
 
 def get_system_uptime_seconds():
-	try:
-		uptime_output = subprocess.check_output(['uptime']).decode('utf-8').strip()
-		uptime_match = re.search(r"up(?:\s+)?((\d+) days?,)?(?:\s+)?(\d+):(\d+)", uptime_output)
+    try:
+        uptime_output = subprocess.check_output(['uptime']).decode('utf-8').strip()
+        uptime_match = re.search(r"up(?:\s+)?((\d+) days?,)?(?:\s+)?(\d+):(\d+)", uptime_output)
 
-		if uptime_match:
-			# Corrected line: Convert numeric day value to integer
-			days = int(uptime_match.group(2)) if uptime_match.group(2) else 0
-			hours, minutes = map(int, uptime_match.group(3, 4))
+        if uptime_match:
+            # Corrected line: Convert numeric day value to integer
+            days = int(uptime_match.group(2)) if uptime_match.group(2) else 0
+            hours, minutes = map(int, uptime_match.group(3, 4))
 
-			days, _, hours, minutes = map(lambda x: int(x) if x else 0, uptime_match.groups())
+            uptime_seconds = days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60
 
-			uptime_seconds = days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60
+            return uptime_seconds
+        else:
+            raise ValueError("Unable to parse uptime information")
 
-			return uptime_seconds
-		else:
-			raise ValueError("Unable to parse uptime information")
-
-	except Exception as e:
-		print(f"Error: {e}")
-		return None
-
-
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
 
 def collect_and_send_metrics(interval_seconds):
 	influx_url = os.getenv("INFLUX_URL")
