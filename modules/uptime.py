@@ -61,4 +61,4 @@ def test(interval_seconds):
 
 	
 if __name__=="__main__":
-	collect_and_send_metrics()
+	collect_and_send_metrics(10)
