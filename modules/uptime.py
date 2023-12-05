@@ -6,6 +6,7 @@ import socket
 from dotenv import load_dotenv
 import influxdb_client
 from influxdb_client.client.write_api import SYNCHRONOUS
+from datetime import datetime
 
 load_dotenv()
 
