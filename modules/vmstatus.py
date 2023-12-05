@@ -45,7 +45,6 @@ def parse_data(log):
 		'vmid': log_parts[6],
 		'details': log_parts[8].strip()
 	}
-	print(log_data)
 	write_in_influx(log_data)
 
 def collect_and_send_metrics(interval_seconds=None):

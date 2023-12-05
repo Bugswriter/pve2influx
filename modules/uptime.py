@@ -16,6 +16,10 @@ def get_system_uptime_seconds():
 		uptime_match = re.search(r"up(?:\s+)?((\d+) days?,)?(?:\s+)?(\d+):(\d+)", uptime_output)
 
 		if uptime_match:
+			# Corrected line: Convert numeric day value to integer
+			days = int(uptime_match.group(2)) if uptime_match.group(2) else 0
+			hours, minutes = map(int, uptime_match.group(3, 4))
+
 			days, _, hours, minutes = map(lambda x: int(x) if x else 0, uptime_match.groups())
 
 			uptime_seconds = days * 24 * 60 * 60 + hours * 60 * 60 + minutes * 60
