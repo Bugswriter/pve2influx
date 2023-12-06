@@ -1,6 +1,6 @@
 {
     "modules": [
         {"name": "uptime", "interval_seconds": 10},
-        {"name": "disk", "interval_seconds": 20},
+        {"name": "disk", "interval_seconds": 20}
     ]
 }
