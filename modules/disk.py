@@ -44,5 +44,5 @@ def get_smartctl_data():
         "media_and_data_integrity_errors": int(media_and_data_integrity_errors)
     }
 
-result = get_smartctl_data()
-print(result)
+def collect_data():
+    return get_smartctl_data()
