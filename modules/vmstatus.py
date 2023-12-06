@@ -16,9 +16,8 @@ def parse_data(log):
 		'vmid': log_parts[6],
 		'details': log_parts[8].strip()
 	}
-	print(log_data)
 
-def collect_data(interval_seconds=None):
+def collect_data_continuously():
 	log_file="/var/log/pve/tasks/index"
 	i = inotify.adapters.Inotify()
 	i.add_watch(log_file)

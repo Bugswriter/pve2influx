@@ -4,6 +4,7 @@ import importlib
 import schedule
 from dotenv import load_dotenv
 import influxdb_client
+from thread import Thread
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 load_dotenv()
@@ -26,6 +27,12 @@ def create_influxdb_point(measurement, data):
 
     return point
 
+def load_config():
+    with open('config/modules_config.json', 'r') as f:
+        config = json.load(f)
+    return config.get("modules", [])
+
+
 def run_module(module_name):
 	module = importlib.import_module(f"modules.{module_name}")
 	data = module.collect_data()
@@ -35,9 +42,13 @@ def run_module(module_name):
 	print(f"writing record for {module_name} finished.")
 	
 def main():
-	modules = ['disk', 'uptime']
-	for module in modules:
-		schedule.every(10).seconds.do(run_module, module_name=module)
+	modules_config = load_config()
+	for module_config in modules_config:
+		module_name = module_config["name"]
+		interval_seconds = module_config.get("interval_seconds", False)
+		
+		schedule.every(interval_seconds).seconds.do(
+			run_module, module_name=module_name)
 
 	while True:
 		schedule.run_pending()
