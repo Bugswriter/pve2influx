@@ -31,11 +31,11 @@ def run_module(module_name):
 	data = module.collect_data()
 	print(data)
 	point = create_influxdb_point(module_name, data)
-	# write_api.write(bucket=influx_bucket, org=influx_org, record=point)
-	# print(f"writing record for {module_name} finished.")
+	write_api.write(bucket=influx_bucket, org=influx_org, record=point)
+	print(f"writing record for {module_name} finished.")
 	
 def main():
-	modules = ['disk', 'uptime', 'sensors']
+	modules = ['disk', 'uptime']
 	for module in modules:
 		schedule.every(10).seconds.do(run_module, module_name=module)
 
