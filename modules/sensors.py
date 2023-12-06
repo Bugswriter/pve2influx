@@ -1,3 +1,4 @@
+import socket
 import json
 import subprocess
 
@@ -15,6 +16,7 @@ def get_sensor_data():
 
     # Extract values into a dictionary
     return {
+	"host": socket.gethostname(),
         "disk temp": sensor_data.get("nvme-pci-0100", {}).get("Composite", {}).get("temp1_input"),
         "cpu tctl": sensor_data.get("k10temp-pci-00c3", {}).get("Tctl", {}).get("temp1_input"),
         "cpu tccd1": sensor_data.get("k10temp-pci-00c3", {}).get("Tccd1", {}).get("temp3_input"),
