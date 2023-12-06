@@ -1,0 +1,14 @@
+[Unit]
+Description=PVE2Influx Service
+After=network.target
+
+[Service]
+ExecStart=/root/pve2influx/env/bin/python3 /root/pve2influx/main.py
+WorkingDirectory=/root/pve2influx
+Restart=always
+RestartSec=5
+User=root
+Group=root
+
+[Install]
+WantedBy=multi-user.target
