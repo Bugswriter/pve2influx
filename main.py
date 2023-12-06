@@ -4,7 +4,6 @@ import importlib
 import schedule
 from dotenv import load_dotenv
 import influxdb_client
-from thread import Thread
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 load_dotenv()
