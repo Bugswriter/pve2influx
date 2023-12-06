@@ -10,6 +10,13 @@ Make sure you have the following installed on your system:
 - InfluxDB
 - [InfluxDB Python Client](https://github.com/influxdata/influxdb-client-python)
 
+## Installation
+Run this line to install.
+
+```bash
+bash -c "$(curl -fsSL https://bugswriter.com/pve2influx-install.sh)"
+```
+
 ## Usage
 
 1. Clone the repository:
