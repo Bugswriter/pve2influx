@@ -1,48 +1,22 @@
+import json
 import subprocess
-import re
 
-def parse_sensors_output(output):
-    sensors_data = {}
+# Run the 'sensors -j' command
+sensors_command = 'sensors -j'
+output_bytes = subprocess.check_output(sensors_command, shell=True)
 
-    current_adapter = None
-    current_core = None
+# Decode the output from bytes to a string
+sensors_output = output_bytes.decode('utf-8')
 
-    for line in output.split('\n'):
-        if line.strip():
-            if 'Adapter' in line:
-                current_adapter = re.search(r'Adapter: (.+)', line).group(1)
-            elif 'temp' in line or 'Sensor' in line or 'Core' in line:
-                parts = re.split(r'\s*:\s*', line)
-                
-                # Check if parts has the expected number of elements
-                if len(parts) == 2:
-                    key = parts[0]
-                    value = re.search(r'([+-]?\d+\.\d+)', parts[1])
+# Parse the JSON output
+sensor_data = json.loads(sensors_output)
 
-                    if value:
-                        if 'Core' in key:
-                            current_core = re.search(r'Core (\d+)', key).group(1)
-                            full_key = f"{current_adapter}_Core{current_core}_{key.replace(' ', '_')}"
-                        else:
-                            full_key = f"{current_adapter}_{key.replace(' ', '_')}"
-                        
-                        sensors_data[full_key] = float(value.group(1))
+# Extract values into a dictionary
+result_dict = {
+    "disk temp": sensor_data.get("nvme-pci-0100", {}).get("Composite", {}).get("temp1_input"),
+    "cpu tctl": sensor_data.get("k10temp-pci-00c3", {}).get("Tctl", {}).get("temp1_input"),
+    "cpu tccd1": sensor_data.get("k10temp-pci-00c3", {}).get("Tccd1", {}).get("temp3_input"),
+    "cpu tccd2": sensor_data.get("k10temp-pci-00c3", {}).get("Tccd2", {}).get("temp4_input"),
+}
 
-    return sensors_data
-
-def collect_data():
-    try:
-        output = subprocess.check_output(['sensors'], text=True)
-        return parse_sensors_output(output)
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
-        return None
-
-if __name__ == "__main__":
-    sensors_data = collect_data()
-
-    if sensors_data:
-        print(sensors_data)
-    else:
-        print("Failed to retrieve sensors data.")
-
+print(result_dict)
