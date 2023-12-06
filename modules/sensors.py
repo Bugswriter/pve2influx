@@ -30,7 +30,7 @@ def parse_sensors_output(output):
 
     return sensors_data
 
-def get_sensors_data():
+def collect_data():
     try:
         output = subprocess.check_output(['sensors'], text=True)
         return parse_sensors_output(output)
@@ -39,7 +39,7 @@ def get_sensors_data():
         return None
 
 if __name__ == "__main__":
-    sensors_data = get_sensors_data()
+    sensors_data = collect_data()
 
     if sensors_data:
         print(sensors_data)
