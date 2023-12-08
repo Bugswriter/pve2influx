@@ -25,3 +25,7 @@ def get_sensor_data():
 
 def collect_data():
     return get_sensor_data()
+
+
+if __name__=="__main__":
+    print(collect_data())

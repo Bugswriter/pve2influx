@@ -2,6 +2,6 @@
     "modules": [
         {"name": "uptime", "interval_seconds": 600},
         {"name": "disk", "interval_seconds": 600},
-        {"name": "sensors", "interval_seconds": 600}
+        {"name": "sensors", "interval_seconds": 60}
     ]
 }

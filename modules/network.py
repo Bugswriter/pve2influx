@@ -12,7 +12,7 @@ def get_network_data(interface):
     return receive_bytes, transmit_bytes
 
 def main():
-    network_interface = "wlo1"
+    network_interface = "enp6s0"
     interval_seconds = 5
 
     try:
