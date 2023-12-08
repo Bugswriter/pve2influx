@@ -29,6 +29,9 @@ def get_disk_usage_for_mount_points(mnt_directory='/mnt'):
         data = []
         data.append(get_disk_space_usage('/'))
 
+        if not os.getenv("STORAGE_SERVER"):
+            return data
+
         # Get and print disk space usage for each mount point
         for mount_point in mount_points:
             full_path = os.path.join(mnt_directory, mount_point)
