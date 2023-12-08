@@ -3,8 +3,20 @@ import socket
 import subprocess
 import json
 
-def get_smartctl_data():
-    disk_path = os.getenv("DISK_PATH")
+def get_nvme_disk_names():
+    try:
+        command_output = subprocess.check_output(['lsblk', '-o', 'NAME,SIZE,MOUNTPOINT'])
+        output_string = command_output.decode('utf-8')
+        lines = output_string.split('\n')
+        nvme_disks = [line.split()[0] for line in lines if 'nvme' in line]
+        return nvme_disks
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error: {e}")
+        return []
+
+
+def get_smartctl_data(disk_path):
 
     if disk_path is None:
         print("DISK_PATH environment variable is not set.")
@@ -31,6 +43,7 @@ def get_smartctl_data():
 
     return {
         "host": hostname,
+        "disk": disk_path,
         "temperature": int(temperature),
         "available_spare": int(available_spare),
         "wearout": int(percentage_used),
@@ -45,4 +58,17 @@ def get_smartctl_data():
     }
 
 def collect_data():
-    return get_smartctl_data()
+    if os.getenv("STORAGE_SERVER"):
+        disks = get_nvme_disk_names()
+        disk_data = []
+        for disk in disks:
+            disk_data.append(get_smartctl_data(f"/dev/{disk}"))
+
+        return disk_data
+
+    disk_path = os.getenv("DISK_PATH")
+    return get_smartctl_data(disk_path)
+
+
+if __name__=="__main__":
+    print(collect_data())

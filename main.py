@@ -34,23 +34,32 @@ def load_config():
 
 
 def run_module(module_name):
-	module = importlib.import_module(f"modules.{module_name}")
-	data = module.collect_data()
-	point = create_influxdb_point(module_name, data)
-	write_api.write(bucket=influx_bucket, org=influx_org, record=point)
-	print(f"writing record for {module_name} finished.")
+    module = importlib.import_module(f"modules.{module_name}")
+    data = module.collect_data()
+
+    if isinstance(data, list):
+        # If collect data return multiple records
+        for record in data:
+            point = create_influxdb_point(module_name, record)
+            write_api.write(bucket=influx_bucket, org=influx_org, record=point)
+            print(f"writing record for {module_name} finished.")
+
+    else:
+        point = create_influxdb_point(module_name, data)
+        write_api.write(bucket=influx_bucket, org=influx_org, record=point)
+        print(f"writing record for {module_name} finished.")
 
 def main():
-	modules_config = load_config()
-	for module_config in modules_config:
-		module_name = module_config["name"]
-		interval_seconds = module_config.get("interval_seconds", False)
+    modules_config = load_config()
+    for module_config in modules_config:
+        module_name = module_config["name"]
+        interval_seconds = module_config.get("interval_seconds", False)
 
-		schedule.every(interval_seconds).seconds.do(
-			run_module, module_name=module_name)
+        schedule.every(interval_seconds).seconds.do(
+            run_module, module_name=module_name)
 
-	while True:
-		schedule.run_pending()
-		time.sleep(1)
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 main()
