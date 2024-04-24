@@ -21,7 +21,8 @@ def create_influxdb_point(measurement, data):
     point = influxdb_client.Point(measurement)
     for key, value in data.items():
         if key == 'host':
-            point = point.tag(key, value)
+            # hotfix for dot in hostname
+            point = point.tag(key, value.split('.')[0])
         else:
             point = point.field(key, value)
 
